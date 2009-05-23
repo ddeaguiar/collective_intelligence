@@ -15,11 +15,7 @@ end
 
 #page 11
 def sim_distance(prefs, person1, person2)
-  si = []
-  prefs[person1].each do |item|
-    key, value = item
-    si << key if prefs[person2].has_key?(key)
-  end
+  si = prefs[person1].keys & prefs[person2].keys
   
   return 0 if si.size == 0
   
