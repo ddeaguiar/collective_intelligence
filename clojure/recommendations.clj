@@ -1,3 +1,11 @@
+(defn sqr [x] (* x x))
+
+(defn euclidean_distance [x1 y1 x2 y2]
+	(/ 1 
+		(+ 1 
+			(Math/sqrt (+ (sqr (- x1 x2)) 
+										(sqr (- y1 y2)))))))
+			
 (def  critics 
 	{"Lisa Rose" 
 	  {
