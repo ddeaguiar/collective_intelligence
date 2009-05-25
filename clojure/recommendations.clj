@@ -1,10 +1,32 @@
+(use 'clojure.set)
+
 (defn sqr [x] (* x x))
 
-(defn euclidean_distance [x1 y1 x2 y2]
+(defn sum-of-sqr [& rest]
+	(reduce + (map sqr rest)))
+
+(defn euclidean-distance [x1 y1 x2 y2]
 	(/ 1 
-		(+ 1 
-			(Math/sqrt (+ (sqr (- x1 x2)) 
-										(sqr (- y1 y2)))))))
+		 (+ 1 
+				(Math/sqrt 
+					(sum-of-sqr (- x1 x2) 
+											(- y1 y2))))))
+
+(defn shared-prefs [prefs person1 person2]
+	(intersection (set (keys (prefs person1))) 
+								(set (keys (prefs person2)))))
+
+(defn sum-of-square-rating-diffs [prefs person1 person2]
+	(reduce +
+					(map 
+						(fn [movie] 
+							(sqr (- ((prefs person1) movie) 
+											((prefs person2) movie)))) 
+					  (shared-prefs prefs person1 person2))))
+
+(defn sim-distance [prefs person1 person2]
+	(/ 1 
+		 (+ 1 (sum-of-square-rating-diffs prefs person1 person2))))
 			
 (def  critics 
 	{"Lisa Rose" 
