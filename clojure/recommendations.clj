@@ -16,13 +16,16 @@
 	(intersection (set (keys (prefs person1))) 
 								(set (keys (prefs person2)))))
 
+(defn map-reduce [reduce-fn map-fn collection]
+	(reduce reduce-fn
+					(map map-fn collection)))
+
 (defn sum-of-square-rating-diffs [prefs person1 person2]
-	(reduce +
-					(map 
-						(fn [movie] 
+	(map-reduce + 
+					(fn [movie] 
 							(sqr (- ((prefs person1) movie) 
-											((prefs person2) movie)))) 
-					  (shared-prefs prefs person1 person2))))
+							((prefs person2) movie))))
+					(shared-prefs prefs person1 person2)))
 
 (defn sim-distance [prefs person1 person2]
 	((fn [x] (if (> x 0) 
