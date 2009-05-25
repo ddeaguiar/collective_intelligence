@@ -25,8 +25,9 @@
 					  (shared-prefs prefs person1 person2))))
 
 (defn sim-distance [prefs person1 person2]
-	(/ 1 
-		 (+ 1 (sum-of-square-rating-diffs prefs person1 person2))))
+	((fn [x] (if (> x 0) 
+								(/ 1 (+ 1 x)) 
+								0)) (sum-of-square-rating-diffs prefs person1 person2)))
 			
 (def  critics 
 	{"Lisa Rose" 
