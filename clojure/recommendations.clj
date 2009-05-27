@@ -60,15 +60,24 @@
 							 		(* ((prefs person1) movie) ((prefs person2) movie)))
 							movies))
 							
+;(defn sim-pearson [prefs person1 person2]
+;	(let [shared (shared-prefs prefs person1 person2)]
+;		(let [sum1 (sum-ratings prefs person1 shared)
+;					sum2 (sum-ratings prefs person2 shared)
+;					sum1sq (sum-ratings-sqr prefs person1 shared)
+;					sum2sq (sum-ratings-sqr prefs person2 shared)
+;					psum (sum-shared-ratings-product prefs person1 person2 shared)]
+;				 (pearson-score sum1 sum2 sum1sq sum2sq psum (count shared)))))
+
 (defn sim-pearson [prefs person1 person2]
 	(let [shared (shared-prefs prefs person1 person2)]
-		(let [sum1 (sum-ratings prefs person1 shared)
-					sum2 (sum-ratings prefs person2 shared)
-					sum1sq (sum-ratings-sqr prefs person1 shared)
-					sum2sq (sum-ratings-sqr prefs person2 shared)
-					psum (sum-shared-ratings-product prefs person1 person2 shared)]
-				 (pearson-score sum1 sum2 sum1sq sum2sq psum (count shared)))))
-	
+				 (pearson-score (sum-ratings prefs person1 shared) 
+												(sum-ratings prefs person2 shared) 
+												(sum-ratings-sqr prefs person1 shared) 
+												(sum-ratings-sqr prefs person2 shared) 
+												(sum-shared-ratings-product prefs person1 person2 shared) 
+												(count shared))))
+									
 (def  critics 
 	{"Lisa Rose" 
 	  {
