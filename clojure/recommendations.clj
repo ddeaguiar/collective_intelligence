@@ -1,9 +1,16 @@
+(in-ns 'recommendations)
+
+(clojure.core/use 'clojure.core)
 (use 'clojure.set)
 
+(defn map-reduce [reduce-fn map-fn collection]
+	(reduce reduce-fn
+					(map map-fn collection)))
+					
 (defn sqr [x] (* x x))
 
 (defn sum-of-sqr [& rest]
-	(reduce + (map sqr rest)))
+	(map-reduce + sqr rest))
 
 (defn euclidean-distance [x1 y1 x2 y2]
 	(/ 1 
@@ -16,10 +23,6 @@
 	(intersection (set (keys (prefs person1))) 
 								(set (keys (prefs person2)))))
 
-(defn map-reduce [reduce-fn map-fn collection]
-	(reduce reduce-fn
-					(map map-fn collection)))
-
 (defn sum-of-square-rating-diffs [prefs person1 person2]
 	(map-reduce + 
 					(fn [movie] 
@@ -27,11 +30,45 @@
 							((prefs person2) movie))))
 					(shared-prefs prefs person1 person2)))
 
+(defn eval-if-gt-zero [func val]
+	((fn [x](if (> x 0)
+						 	(func x)
+							0)) val))
+
 (defn sim-distance [prefs person1 person2]
-	((fn [x] (if (> x 0) 
-								(/ 1 (+ 1 x)) 
-								0)) (sum-of-square-rating-diffs prefs person1 person2)))
-			
+	(eval-if-gt-zero (fn [x] (/ 1 (+ 1 x))) 
+												(sum-of-square-rating-diffs prefs person1 person2)))
+
+(defn pearson-score [sum1 sum2 sum1sq sum2sq psum n]
+	(/ (- psum (/ (* sum1 sum2) n))
+		 (Math/sqrt (* (- sum1sq (/ (sqr sum1) n))
+									 (- sum2sq (/ (sqr sum2) n))))))
+
+(defn sum-ratings [prefs person movies]
+	(map-reduce +
+							(fn [movie]
+							 		((prefs person) movie)) movies))
+
+(defn sum-ratings-sqr [prefs person movies]
+	(map-reduce +
+							(fn [movie]
+							 		(sqr ((prefs person) movie))) movies))
+
+(defn sum-shared-ratings-product [prefs person1 person2 movies]
+	(map-reduce +
+							(fn [movie]
+							 		(* ((prefs person1) movie) ((prefs person2) movie)))
+							movies))
+							
+(defn sim-pearson [prefs person1 person2]
+	(let [shared (shared-prefs prefs person1 person2)]
+		(let [sum1 (sum-ratings prefs person1 shared)
+					sum2 (sum-ratings prefs person2 shared)
+					sum1sq (sum-ratings-sqr prefs person1 shared)
+					sum2sq (sum-ratings-sqr prefs person2 shared)
+					psum (sum-shared-ratings-product prefs person1 person2 shared)]
+				 (pearson-score sum1 sum2 sum1sq sum2sq psum (count shared)))))
+	
 (def  critics 
 	{"Lisa Rose" 
 	  {
