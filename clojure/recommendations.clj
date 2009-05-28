@@ -1,5 +1,4 @@
 (in-ns 'recommendations)
-
 (clojure.core/use 'clojure.core)
 (use 'clojure.set)
 
@@ -13,11 +12,7 @@
 	(map-reduce + sqr rest))
 
 (defn euclidean-distance [x1 y1 x2 y2]
-	(/ 1 
-		 (+ 1 
-				(Math/sqrt 
-					(sum-of-sqr (- x1 x2) 
-											(- y1 y2))))))
+	(/ 1 (+ 1 (Math/sqrt (sum-of-sqr (- x1 x2) (- y1 y2))))))
 
 (defn shared-prefs [prefs person1 person2]
 	(intersection (set (keys (prefs person1))) 
@@ -68,7 +63,23 @@
 												(sum-ratings-sqr prefs person2 shared) 
 												(sum-shared-ratings-product prefs person1 person2 shared) 
 												(count shared))))
-									
+
+(defn other-critics [prefs person] 
+										(difference (set (keys prefs)) [person]))
+	
+(defstruct match :name :score)
+
+(defn top-matches 
+	([prefs person] (top-matches prefs person 5 sim-pearson))
+	([prefs person n] (top-matches prefs person n sim-pearson))
+	([prefs person n sim-fn] 
+		(take n 
+					(reverse (sort-by :score 
+														(map (fn [other] 
+																		 (struct match 
+																						 other 
+																						 (sim-fn prefs person other)))
+														(other-critics prefs person)))))))
 (def  critics 
 	{"Lisa Rose" 
 	  {
