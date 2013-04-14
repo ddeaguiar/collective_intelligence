@@ -5,5 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :plugins [[lein-midje "3.0.1"]]
   :dependencies [[org.clojure/clojure "1.5.0"]]
-  :dev {:dependencies [[midje "1.5.0"]]}
+  :profiles {:dev {:dependencies [[midje "1.5.0"]]}}
   :main ci.core)
