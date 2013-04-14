@@ -3,11 +3,9 @@
 
 (defn shared-movies [prefs1 prefs2]
   "Returns a map of shared movies and ratings based on the critics preferences."
-  (if-let [shared (apply merge (for [k (keys prefs1)
-                                     :when (contains? prefs2 k)]
-                                 (assoc {} k [(prefs1 k) (prefs2 k)])))]
-    shared
-    {}))
+  (apply merge {} (for [k (keys prefs1)
+                        :when (contains? prefs2 k)]
+                    (assoc {} k [(prefs1 k) (prefs2 k)]))))
 
 (defn sum-of-squares [differences]
   "Takes a collection of numeric pairs (each pair is a collection) and
